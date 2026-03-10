@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Tracker</title>
+  <meta name="description" content="Beautiful weather tracking for any US zip code. Current conditions and 7-day forecast.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <div class="card">
+      <header class="card-header">
+        <h1 class="logo">Weather Tracker</h1>
+        <form id="search-form" class="search-form" autocomplete="off">
+          <input
+            id="zip-input"
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]{5}"
+            maxlength="5"
+            placeholder="Enter zip code"
+            aria-label="Zip code"
+            required
+          >
+          <button type="submit" aria-label="Search">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+        </form>
+      </header>
+
+      <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p>Fetching weather&hellip;</p>
+      </div>
+
+      <div id="error" class="error-msg hidden"></div>
+
+      <main id="weather" class="weather hidden">
+        <div id="alerts" class="alerts hidden"></div>
+
+        <section class="current">
+          <div class="current-location">
+            <h2 id="location-name"></h2>
+            <p id="current-date"></p>
+          </div>
+          <div class="current-main">
+            <div id="current-icon" class="current-icon"></div>
+            <div class="current-temp-wrap">
+              <span id="current-temp" class="current-temp"></span>
+              <span id="current-condition" class="current-condition"></span>
+            </div>
+          </div>
+          <div class="detail-chips">
+            <div class="chip">
+              <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+              <div class="chip-text">
+                <span class="chip-label">Feels like</span>
+                <span id="feels-like" class="chip-value"></span>
+              </div>
+            </div>
+            <div class="chip">
+              <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+              <div class="chip-text">
+                <span class="chip-label">Humidity</span>
+                <span id="humidity" class="chip-value"></span>
+              </div>
+            </div>
+            <div class="chip">
+              <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>
+              <div class="chip-text">
+                <span class="chip-label">Wind</span>
+                <span id="wind" class="chip-value"></span>
+              </div>
+            </div>
+            <div class="chip">
+              <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+              <div class="chip-text">
+                <span class="chip-label">UV Index</span>
+                <span id="uv-index" class="chip-value"></span>
+              </div>
+            </div>
+            <div class="chip">
+              <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 18a5 5 0 0 0-10 0"/><line x1="12" y1="9" x2="12" y2="2"/><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"/><line x1="1" y1="18" x2="3" y2="18"/><line x1="21" y1="18" x2="23" y2="18"/><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"/></svg>
+              <div class="chip-text">
+                <span class="chip-label">Sunrise</span>
+                <span id="sunrise" class="chip-value"></span>
+              </div>
+            </div>
+            <div class="chip">
+              <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 18a5 5 0 0 0-10 0"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"/><line x1="1" y1="18" x2="3" y2="18"/><line x1="21" y1="18" x2="23" y2="18"/><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"/></svg>
+              <div class="chip-text">
+                <span class="chip-label">Sunset</span>
+                <span id="sunset" class="chip-value"></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="precip-section" class="precip-section hidden">
+          <div id="precip-banner" class="precip-banner"></div>
+        </section>
+
+        <section class="hourly">
+          <h3 class="section-title">Today &mdash; Hourly</h3>
+          <div id="hourly-cards" class="hourly-cards"></div>
+        </section>
+
+        <section class="forecast">
+          <h3 class="section-title">7-Day Forecast</h3>
+          <div id="forecast-cards" class="forecast-cards"></div>
+        </section>
+
+        <footer class="meta">
+          <span id="last-updated"></span>
+          <button id="refresh-btn" class="refresh-btn" aria-label="Refresh weather">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Refresh
+          </button>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
