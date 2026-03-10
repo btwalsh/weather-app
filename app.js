@@ -138,7 +138,29 @@
 
   let currentZip = "";
   let refreshTimer = null;
+  let loadingInterval = null;
   const REFRESH_MS = 15 * 60 * 1000;
+
+  const LOADING_SCENES = [
+    { emoji: "🔭",  msg: "Scanning the skies" },
+    { emoji: "🌤️",  msg: "Peeking through clouds" },
+    { emoji: "🌡️",  msg: "Reading the thermometer" },
+    { emoji: "💨",  msg: "Checking the wind" },
+    { emoji: "🌧️",  msg: "Counting raindrops" },
+    { emoji: "🧭",  msg: "Consulting the compass" },
+    { emoji: "🌈",  msg: "Chasing rainbows" },
+    { emoji: "⛅",  msg: "Decoding cloud shapes" },
+    { emoji: "🌊",  msg: "Measuring the breeze" },
+    { emoji: "🦎",  msg: "Asking a local lizard" },
+    { emoji: "🐸",  msg: "Frog says rain's coming" },
+    { emoji: "☕",  msg: "Brewing your forecast" },
+    { emoji: "🛰️",  msg: "Pinging satellites" },
+    { emoji: "🌀",  msg: "Unraveling weather patterns" },
+    { emoji: "🧊",  msg: "Measuring dewpoint" },
+  ];
+
+  const loadingEmoji = $("#loading-emoji");
+  const loadingMsg = $("#loading-msg");
 
   // ── API Helpers ─────────────────────────────────────────────
 
@@ -365,13 +387,39 @@
 
   // ── UI State Helpers ────────────────────────────────────────
 
+  function startLoadingAnimation() {
+    let idx = Math.floor(Math.random() * LOADING_SCENES.length);
+    const show = () => {
+      const scene = LOADING_SCENES[idx];
+      loadingEmoji.textContent = scene.emoji;
+      loadingMsg.textContent = scene.msg;
+      loadingEmoji.style.animation = "none";
+      loadingMsg.style.animation = "none";
+      void loadingEmoji.offsetWidth;
+      loadingEmoji.style.animation = "";
+      loadingMsg.style.animation = "";
+      idx = (idx + 1) % LOADING_SCENES.length;
+    };
+    show();
+    loadingInterval = setInterval(show, 2000);
+  }
+
+  function stopLoadingAnimation() {
+    if (loadingInterval) {
+      clearInterval(loadingInterval);
+      loadingInterval = null;
+    }
+  }
+
   function showLoading() {
     loadingEl.classList.remove("hidden");
     errorEl.classList.add("hidden");
     weatherEl.classList.add("hidden");
+    startLoadingAnimation();
   }
 
   function showError(msg) {
+    stopLoadingAnimation();
     loadingEl.classList.add("hidden");
     errorEl.classList.remove("hidden");
     errorEl.textContent = msg;
@@ -379,6 +427,7 @@
   }
 
   function showWeather() {
+    stopLoadingAnimation();
     loadingEl.classList.add("hidden");
     errorEl.classList.add("hidden");
     weatherEl.classList.remove("hidden");
